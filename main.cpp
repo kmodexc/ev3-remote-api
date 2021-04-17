@@ -181,7 +181,7 @@ void send_command(int fd, Command& com){
 		printf("Error: %d\n", errno);
 		perror("write");
 	} else {
-		printf("write() wrote %d bytes\n", res);
+		printf("write() wrote %d bytes\n", (int32_t)res);
 		for(int cnt=0;cnt < buffer.size();cnt++)
 			printf("%02x ",buffer[cnt]);
 		printf("\n");
