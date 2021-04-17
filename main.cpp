@@ -36,6 +36,7 @@
 #include "Command.h"
 
 const char *bus_str(int bus);
+void send_command(int fd, Command& com);
 int main(int argc, char **argv)
 {
 	int fd;
@@ -118,17 +119,16 @@ int main(int argc, char **argv)
 	// 	puts("\n");
 	// }
 
-	/* Send a Report to the Device */
-	Command test;
-	test.startMotor(1);
-	auto& buffer = test.toBytes();
-	res = write(fd, buffer.data(), buffer.size());
-	if (res < 0) {
-		printf("Error: %d\n", errno);
-		perror("write");
-	} else {
-		printf("write() wrote %d bytes\n", res);
-	}
+	
+	const uint8_t port = 3;
+
+	Command c1(DIRECT_COMMAND_NO_REPLY,2);
+	c1.turnMotorAtPowerForTime(port,50,0,900,180,true);
+	send_command(fd,c1);
+
+	// Command c2(DIRECT_COMMAND_NO_REPLY,1);
+	// c2.startMotor(port);
+	// send_command(fd,c2);
 
 
 	/* Get a report from the device */
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 	// 	puts("\n");
 	// }
 
-
+	sleep(5);
 
 	close(fd);
 	return 0;
@@ -166,5 +166,18 @@ bus_str(int bus)
 	default:
 		return "Other";
 		break;
+	}
+}
+void send_command(int fd, Command& com){
+	auto& buffer = com.toBytes();
+	auto res = write(fd, buffer.data(), buffer.size());
+	if (res < 0) {
+		printf("Error: %d\n", errno);
+		perror("write");
+	} else {
+		printf("write() wrote %d bytes\n", res);
+		for(int cnt=0;cnt < buffer.size();cnt++)
+			printf("%02x ",buffer[cnt]);
+		printf("\n");
 	}
 }
