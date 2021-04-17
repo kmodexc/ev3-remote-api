@@ -95,6 +95,12 @@ int main(int argc, char **argv)
 		printf("\tproduct: 0x%04hx\n", info.product);
 	}
 
+	if(info.vendor != 0x0694 || info.product != 0x0005)
+	{
+		printf("Wrong Vendor/Product. Exiting.\n");
+		return 1;
+	}
+
 	/* Set Feature */
 	// buf[0] = 0x9; /* Report Number */
 	// buf[1] = 0xff;
