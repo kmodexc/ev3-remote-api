@@ -32,6 +32,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+
+#include "Command.h"
+
 const char *bus_str(int bus);
 int main(int argc, char **argv)
 {
@@ -90,48 +93,57 @@ int main(int argc, char **argv)
 		printf("\tvendor: 0x%04hx\n", info.vendor);
 		printf("\tproduct: 0x%04hx\n", info.product);
 	}
+
 	/* Set Feature */
-	buf[0] = 0x9; /* Report Number */
-	buf[1] = 0xff;
-	buf[2] = 0xff;
-	buf[3] = 0xff;
-	res = ioctl(fd, HIDIOCSFEATURE(4), buf);
-	if (res < 0)
-		perror("HIDIOCSFEATURE");
-	else
-		printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
+	// buf[0] = 0x9; /* Report Number */
+	// buf[1] = 0xff;
+	// buf[2] = 0xff;
+	// buf[3] = 0xff;
+	// res = ioctl(fd, HIDIOCSFEATURE(4), buf);
+	// if (res < 0)
+	// 	perror("HIDIOCSFEATURE");
+	// else
+	// 	printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
+
 	/* Get Feature */
-	buf[0] = 0x9; /* Report Number */
-	res = ioctl(fd, HIDIOCGFEATURE(256), buf);
-	if (res < 0) {
-		perror("HIDIOCGFEATURE");
-	} else {
-		printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
-		printf("Report data (not containing the report number):\n\t");
-		for (i = 0; i < res; i++)
-			printf("%hhx ", buf[i]);
-		puts("\n");
-	}
+	// buf[0] = 0x9; /* Report Number */
+	// res = ioctl(fd, HIDIOCGFEATURE(256), buf);
+	// if (res < 0) {
+	// 	perror("HIDIOCGFEATURE");
+	// } else {
+	// 	printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
+	// 	printf("Report data (not containing the report number):\n\t");
+	// 	for (i = 0; i < res; i++)
+	// 		printf("%hhx ", buf[i]);
+	// 	puts("\n");
+	// }
+
 	/* Send a Report to the Device */
-	buf[0] = 0x1; /* Report Number */
-	buf[1] = 0x77;
-	res = write(fd, buf, 2);
+	Command test;
+	test.startMotor(1);
+	auto& buffer = test.toBytes();
+	res = write(fd, buffer.data(), buffer.size());
 	if (res < 0) {
 		printf("Error: %d\n", errno);
 		perror("write");
 	} else {
 		printf("write() wrote %d bytes\n", res);
 	}
+
+
 	/* Get a report from the device */
-	res = read(fd, buf, 16);
-	if (res < 0) {
-		perror("read");
-	} else {
-		printf("read() read %d bytes:\n\t", res);
-		for (i = 0; i < res; i++)
-			printf("%hhx ", buf[i]);
-		puts("\n");
-	}
+	// res = read(fd, buf, 16);
+	// if (res < 0) {
+	// 	perror("read");
+	// } else {
+	// 	printf("read() read %d bytes:\n\t", res);
+	// 	for (i = 0; i < res; i++)
+	// 		printf("%hhx ", buf[i]);
+	// 	puts("\n");
+	// }
+
+
+
 	close(fd);
 	return 0;
 }

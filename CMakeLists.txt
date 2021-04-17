@@ -1,2 +1,2 @@
 project(LegoRaspiApi)
-add_executable(LegoRaspiApi main.cpp)
+add_executable(LegoRaspiApi main.cpp "Command.cpp")
