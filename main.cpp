@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
 	Brick brick;
 	
-	if(!brick.Initialize("/dev/hidraw0"))
+	if(!brick.Initialize("/dev/hidraw2"))
 		return 1;
 
 	brick.setMotorPower(Output::A,50);
