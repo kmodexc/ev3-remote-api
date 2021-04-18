@@ -4,8 +4,10 @@ int Brick::sendCommand(Command& com){
 	if(com.responseHandler != nullptr)
 	{
 		CBuffer reply;
-		if (!con.Send(com.toBytes(),&reply))
+		if (!con.Send(com.toBytes(),&reply)){
 			printf("could not send command\n");
+			return INT32_MIN;
+		}
 		return com.responseHandler(reply);
 	}
 	else{
@@ -13,22 +15,6 @@ int Brick::sendCommand(Command& com){
 			printf("could not send command\n");
 		return INT32_MIN;
 	}
-}
-
-Brick::Brick(bool debug):
-	msg_cnt(0),
-	debug(debug),
-	con(debug)
-{
-}
-
-Brick::~Brick()
-{
-}
-
-bool Brick::Initialize(const char *path)
-{
-	return con.Initialize(path);
 }
 
 void Brick::setMotorPower(Output motor, int8_t power)
@@ -43,10 +29,8 @@ void Brick::setMotorPower(Output motor, int8_t power)
 	{
 		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++);
 		c1.startMotorPower((uint8_t)motor, power);
+		c1.startMotor((uint8_t)motor);
 		sendCommand(c1);
-		Command c2(DIRECT_COMMAND_NO_REPLY, msg_cnt++);
-		c2.startMotor((uint8_t)motor);
-		sendCommand(c2);
 	}
 }
 
