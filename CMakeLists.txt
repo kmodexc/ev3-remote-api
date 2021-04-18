@@ -2,11 +2,18 @@ cmake_minimum_required(VERSION 3.16)
 
 project(LegoRaspiApi)
 
-add_executable(LegoRaspiApi 
-	main.cpp 
+
+
+add_library(LegoRaspiApiLib
 	"Command.cpp"
 	HIDCon.cpp
 	Brick.cpp
 )
 
-target_compile_features(LegoRaspiApi PRIVATE cxx_std_17)
+add_executable(LegoRaspiApiTest
+	main.cpp
+)
+
+target_link_libraries(LegoRaspiApiTest LegoRaspiApiLib)
+
+target_compile_features(LegoRaspiApiLib PRIVATE cxx_std_17)
