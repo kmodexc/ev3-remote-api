@@ -11,7 +11,8 @@ Command::Command()
 
 Command::Command(uint8_t type, uint16_t msg_id)
 	: type(type),
-	  msg_id(msg_id)
+	  msg_id(msg_id),
+	  responseHandler(nullptr)
 {
 	data.push_back(0xff); // size
 	data.push_back(0xff); // size
@@ -34,6 +35,14 @@ void Command::startMotor(uint8_t port)
 	addOpCode(opOUTPUT_START);
 	addParameter((uint8_t)0);
 	addParameter(port);
+}
+
+void Command::stopMotor(uint8_t port)
+{
+	addOpCode(opOUTPUT_STOP);
+	addParameter((uint8_t)0);
+	addParameter(port);
+	addParameter((uint8_t)0);
 }
 
 void Command::addOpCode(uint8_t code)

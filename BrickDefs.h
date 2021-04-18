@@ -11,5 +11,9 @@ enum class Input{
 	Port1 = 0,
 	Port2 = 1,
 	Port3 = 2,
-	Port4 = 3
+	Port4 = 3,
+	PortA = 16,
+	PortB = 17,
+	PortC = 18,
+	PortD = 19
 };

@@ -28,6 +28,7 @@ public:
 	
 	// commands
 	void startMotor(uint8_t port);
+	void stopMotor(uint8_t port);
 	void turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRampUp, uint32_t msConstant, uint32_t msRampDown, bool brake);
 	void turnMotorAtSpeedForAngle(uint8_t ports, int8_t speed, uint32_t stepRampUp, uint32_t stepConstant, uint32_t stepRampDown, bool brake);
 	void startMotorPower(uint8_t port, int8_t power);

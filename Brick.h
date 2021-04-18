@@ -7,8 +7,11 @@
 class Brick{
 	HIDCon con;
 	uint16_t msg_cnt;
+	bool debug;
+protected:
+	int sendCommand(Command& com);
 public:
-	Brick();
+	Brick(bool debug=false);
 	~Brick();
 	bool Initialize(const char* path);
 	bool Initialize() { return Initialize("/dev/hidraw0"); }

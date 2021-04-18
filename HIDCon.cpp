@@ -42,9 +42,10 @@ using std::min;
 
 const char *bus_str(int bus);
 
-HIDCon::HIDCon()
+HIDCon::HIDCon(bool debug):
+	debug(debug),
+	fd(-1)
 {
-	fd = -1;
 }
 
 HIDCon::~HIDCon()
@@ -77,7 +78,7 @@ bool HIDCon::Initialize(const char *path)
 		perror("HIDIOCGRDESCSIZE");
 		return false;
 	}
-	else
+	else if(debug)
 		printf("Report Descriptor Size: %d\n", desc_size);
 	/* Get Report Descriptor */
 	rpt_desc.size = desc_size;
@@ -87,7 +88,7 @@ bool HIDCon::Initialize(const char *path)
 		perror("HIDIOCGRDESC");
 		return false;
 	}
-	else
+	else if(debug)
 	{
 		printf("Report Descriptor:\n");
 		for (i = 0; i < rpt_desc.size; i++)
@@ -101,7 +102,7 @@ bool HIDCon::Initialize(const char *path)
 		perror("HIDIOCGRAWNAME");
 		return false;
 	}
-	else
+	else if(debug)
 		printf("Raw Name: %s\n", buf);
 	/* Get Physical Location */
 	res = ioctl(fd, HIDIOCGRAWPHYS(256), buf);
@@ -110,7 +111,7 @@ bool HIDCon::Initialize(const char *path)
 		perror("HIDIOCGRAWPHYS");
 		return false;
 	}
-	else
+	else if(debug)
 		printf("Raw Phys: %s\n", buf);
 	/* Get Raw Info */
 	res = ioctl(fd, HIDIOCGRAWINFO, &info);
@@ -119,7 +120,7 @@ bool HIDCon::Initialize(const char *path)
 		perror("HIDIOCGRAWINFO");
 		return false;
 	}
-	else
+	else if(debug)
 	{
 		printf("Raw Info:\n");
 		printf("\tbustype: %d (%s)\n",
@@ -148,7 +149,7 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 		perror("write");
 		return false;
 	}
-	else
+	else if(debug)
 	{
 		printf("write() wrote %d bytes\n", (int32_t)res);
 		for (int cnt = 0; cnt < buffer.size(); cnt++)
@@ -186,7 +187,7 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 		{
 			perror("read");
 		}
-		else
+		else if(debug)
 		{
 			printf("read-size: read() read %d bytes:\n\t", (int32_t)res);
 			for (int i = 0; i < sizeof(buf); i++)

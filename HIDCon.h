@@ -4,8 +4,9 @@
 class HIDCon
 {
 	int fd;
+	bool debug;
 public:
-	HIDCon();
+	HIDCon(bool debug=false);
 	~HIDCon();
 	bool Initialize(const char* path);
 	bool Initialize();
