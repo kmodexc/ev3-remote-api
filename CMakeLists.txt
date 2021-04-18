@@ -4,11 +4,17 @@ project(LegoRaspiApi)
 
 
 
-add_library(LegoRaspiApiLib
+add_library(LegoRaspiApiLib SHARED
 	"Command.cpp"
 	HIDCon.cpp
 	Brick.cpp
 )
+
+add_library(PubLeReAPI SHARED
+	PubLeReAPI.cpp
+)
+
+target_link_libraries(PubLeReAPI PUBLIC LegoRaspiApiLib)
 
 add_executable(LegoRaspiApiTest
 	main.cpp
