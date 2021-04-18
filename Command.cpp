@@ -1,6 +1,9 @@
 #include "Command.h"
 #include "malloc.h"
 
+#include "bytecode.h"
+#include "c_com.h"
+
 Command::Command()
 	: Command(DIRECT_COMMAND_NO_REPLY, 1)
 {
@@ -29,37 +32,28 @@ Command::~Command()
 void Command::startMotor(uint8_t port)
 {
 	addOpCode(opOUTPUT_START);
-	addParameter(0);
+	addParameter((uint8_t)0);
 	addParameter(port);
 }
 
-void Command::addOpCode(OP code)
+void Command::addOpCode(uint8_t code)
 {
 	this->data.push_back(code);
 }
 
 void Command::addParameter(uint8_t param)
 {
-	data.push_back(sizeof(param));
+	data.push_back(0x81);
 	data.push_back(param);
-}
-
-void Command::addParameter(int8_t param)
-{
-	data.push_back(sizeof(param));
-	data.push_back((uint8_t)param);
 }
 
 void Command::addParameter(uint32_t param)
 {
-	data.push_back(sizeof(param));
-	data.push_back(param);
-}
-
-void Command::addParameter(int32_t param)
-{
-	data.push_back(sizeof(param));
-	data.push_back((uint32_t)param);
+	data.push_back(0x83);
+	data.push_back((uint8_t)(param & 0xff));
+	data.push_back((uint8_t)((param >> 8) & 0xff));
+	data.push_back((uint8_t)((param >> 16) & 0xff));
+	data.push_back((uint8_t)((param >> 24) & 0xff));
 }
 
 void Command::turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRampUp, uint32_t msConstant, uint32_t msRampDown, bool brake)
@@ -74,9 +68,24 @@ void Command::turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRa
 	addParameter((uint8_t)(brake ? 0x01 : 0x00));
 }
 
-void Command::turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msConstant)
+void Command::turnMotorAtSpeedForAngle(uint8_t ports, int8_t speed, uint32_t stepRampUp, uint32_t stepConstant, uint32_t stepRampDown, bool brake)
 {
-	turnMotorAtPowerForTime(ports, power, 0, msConstant, 0, false);
+	addOpCode(opOUTPUT_STEP_SPEED);
+	addParameter((uint8_t)0);
+	addParameter(ports);
+	addParameter(speed);
+	addParameter(stepRampUp);
+	addParameter(stepConstant);
+	addParameter(stepRampDown);
+	addParameter((uint8_t)(brake ? 0x01 : 0x00));
+}
+
+void Command::startMotorPower(uint8_t port, int8_t power)
+{
+	addOpCode(opOUTPUT_SPEED);
+	addParameter((uint8_t)0);
+	addParameter(port);
+	addParameter(power);
 }
 
 std::vector<uint8_t> &Command::toBytes()
