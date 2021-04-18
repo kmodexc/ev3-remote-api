@@ -12,7 +12,6 @@ class Command{
 	CBuffer data;
 	uint16_t msg_id;
 	uint8_t type;
-
 protected:
 
 	void addOpCode(uint8_t code);
@@ -26,9 +25,21 @@ protected:
 public:
 	Command(uint8_t type, uint16_t msg_id);
 	~Command();
+	
+	// commands
 	void startMotor(uint8_t port);
 	void turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRampUp, uint32_t msConstant, uint32_t msRampDown, bool brake);
 	void turnMotorAtSpeedForAngle(uint8_t ports, int8_t speed, uint32_t stepRampUp, uint32_t stepConstant, uint32_t stepRampDown, bool brake);
 	void startMotorPower(uint8_t port, int8_t power);
+	void readSensor(uint8_t port);
+	
+
+	// response handlers
+	static int responseReadSensor(CBuffer& data);
+	
+
+	// general
 	CBuffer& toBytes();
+	
+	int (*responseHandler)(CBuffer& respData);
 };

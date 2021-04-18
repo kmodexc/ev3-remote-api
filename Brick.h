@@ -13,4 +13,5 @@ public:
 	bool Initialize(const char* path);
 	bool Initialize() { return Initialize("/dev/hidraw0"); }
 	void setMotorPower(Output motor,int8_t power);
+	int getSensorVal(Input port);
 };

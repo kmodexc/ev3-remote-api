@@ -35,6 +35,11 @@
 #include <stdlib.h>
 #include <errno.h>
 
+
+#include <poll.h>
+
+using std::min;
+
 const char *bus_str(int bus);
 
 HIDCon::HIDCon()
@@ -44,11 +49,11 @@ HIDCon::HIDCon()
 
 HIDCon::~HIDCon()
 {
-	if(fd >= 0)
+	if (fd >= 0)
 		close(fd);
 }
 
-bool HIDCon::Initialize(const char* path)
+bool HIDCon::Initialize(const char *path)
 {
 	int i, res, desc_size = 0;
 	char buf[256];
@@ -56,7 +61,7 @@ bool HIDCon::Initialize(const char* path)
 	struct hidraw_devinfo info;
 	/* Open the Device with non-blocking reads. In real life,
 	   don't use a hard coded path; use libudev instead. */
-	fd = open(path, O_RDWR /*| O_NONBLOCK  */ );
+	fd = open(path, O_RDWR /*| O_NONBLOCK  */);
 	if (fd < 0)
 	{
 		perror("Unable to open device");
@@ -130,10 +135,11 @@ bool HIDCon::Initialize(const char* path)
 	}
 	return true;
 }
-bool HIDCon::Initialize(){
+bool HIDCon::Initialize()
+{
 	return Initialize("/dev/hidraw0");
 }
-bool HIDCon::Send(const CBuffer &buffer, CBuffer *rec_buffer)
+bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 {
 	auto res = write(fd, buffer.data(), buffer.size());
 	if (res < 0)
@@ -150,17 +156,50 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *rec_buffer)
 		printf("\n");
 	}
 
+	if (presp != nullptr)
+	{
 
-	/* Get a report from the device */
-	// res = read(fd, buf, 16);
-	// if (res < 0) {
-	// 	perror("read");
-	// } else {
-	// 	printf("read() read %d bytes:\n\t", res);
-	// 	for (i = 0; i < res; i++)
-	// 		printf("%hhx ", buf[i]);
-	// 	puts("\n");
-	// }
+		int ret;
+		struct pollfd fds;
+
+		fds.fd = fd;
+		fds.events = POLLIN;
+		fds.revents = 0;
+		const int timeout = 1000;
+		ret = poll(&fds, 1, timeout);
+		if (ret == 0) {
+			/* Timeout */
+			printf("read timeout %d\n",(uint32_t)timeout);
+			return false;
+		}
+		if (ret == -1) {
+			/* Error */
+			perror("POLL: ");
+			return false;
+		}
+
+		uint8_t buf[10]; 
+
+		/* Get a report from the device */
+		res = read(fd, buf, sizeof(buf));
+		if (res < 0)
+		{
+			perror("read");
+		}
+		else
+		{
+			printf("read-size: read() read %d bytes:\n\t", (int32_t)res);
+			for (int i = 0; i < sizeof(buf); i++)
+				printf("%hhx ", buf[i]);
+			puts("\n");
+		}
+
+		size_t msg_size = buf[0] + (buf[1] << 8);
+
+		presp->resize(msg_size+2);
+
+		memcpy(presp->data(),buf,min(msg_size+2,sizeof(buf)));
+	}
 
 	return true;
 }
@@ -168,7 +207,8 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *rec_buffer)
 const char *
 bus_str(int bus)
 {
-	switch (bus) {
+	switch (bus)
+	{
 	case BUS_USB:
 		return "USB";
 		break;

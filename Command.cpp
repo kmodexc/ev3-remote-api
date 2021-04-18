@@ -88,6 +88,24 @@ void Command::startMotorPower(uint8_t port, int8_t power)
 	addParameter(power);
 }
 
+void Command::readSensor(uint8_t port){
+	addOpCode(opINPUT_DEVICE);
+	addParameter((uint8_t)GET_RAW);
+	addParameter((uint8_t)0);
+	addParameter(port);
+	data.push_back((uint8_t)GV0(0));	// destination where to store return
+	data[5] += 1;					// state that you want to use a global variable
+	responseHandler = responseReadSensor;
+}
+
+int Command::responseReadSensor(CBuffer& data)
+{
+	if(data[4] != DIRECT_REPLY)
+		return -1;
+	return data[5];
+}
+
+
 std::vector<uint8_t> &Command::toBytes()
 {
 	COMCMD *cmd = (COMCMD *)data.data();

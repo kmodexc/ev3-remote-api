@@ -10,19 +10,25 @@ int main(int argc, char **argv)
 	if(!brick.Initialize("/dev/hidraw2"))
 		return 1;
 
-	brick.setMotorPower(Output::A,50);
+	for(int cnt=0;cnt<4;cnt++){
+		int val = brick.getSensorVal((Input)cnt);
+		printf("sensor %d val is %d\n",(int32_t)cnt, (int32_t)val);
+	}
+	
 
-	sleep(1);
+	// brick.setMotorPower(Output::A,50);
 
-	brick.setMotorPower(Output::A,0);
+	// sleep(1);
 
-	sleep(1);
+	// brick.setMotorPower(Output::A,0);
 
-	brick.setMotorPower(Output::A,-50);
+	// sleep(1);
 
-	sleep(1);
+	// brick.setMotorPower(Output::A,-50);
 
-	brick.setMotorPower(Output::A,0);
+	// sleep(1);
+
+	// brick.setMotorPower(Output::A,0);
 
 	return 0;
 }
