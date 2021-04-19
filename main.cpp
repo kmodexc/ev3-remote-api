@@ -76,14 +76,22 @@ int main(int argc, char **argv)
 
 	steady_clock::time_point begin = steady_clock::now();
 
-
-	startMotor(brick);
-
 	val = brick.getSensorVal(Input::Port1);
 
 	steady_clock::time_point end = steady_clock::now();
 
 	cout << "val is " << val << endl;
+
+	cout << "Time difference = " << duration_cast<microseconds>(end - begin).count() << "[µs]" << endl;
+	cout << "Time difference = " << duration_cast<nanoseconds>(end - begin).count() << "[ns]" << endl;
+
+	sleep(1);
+
+	steady_clock::time_point begin = steady_clock::now();
+
+	startMotor(brick);
+
+	steady_clock::time_point end = steady_clock::now();
 
 	cout << "Time difference = " << duration_cast<microseconds>(end - begin).count() << "[µs]" << endl;
 	cout << "Time difference = " << duration_cast<nanoseconds>(end - begin).count() << "[ns]" << endl;
