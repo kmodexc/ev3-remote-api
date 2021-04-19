@@ -23,5 +23,6 @@ add_executable(LegoRaspiApiTest
 target_link_libraries(LegoRaspiApiTest LegoRaspiApiLib)
 
 target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
-
+target_compile_features(LegoRaspiApiTest PUBLIC cxx_std_17)
 set_property(TARGET LegoRaspiApiLib PROPERTY CXX_STANDARD 17)
+set_property(TARGET LegoRaspiApiTest PROPERTY CXX_STANDARD 17)
