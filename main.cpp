@@ -76,6 +76,9 @@ int main(int argc, char **argv)
 
 	steady_clock::time_point begin = steady_clock::now();
 
+
+	startMotor(brick);
+
 	val = brick.getSensorVal(Input::Port1);
 
 	steady_clock::time_point end = steady_clock::now();
