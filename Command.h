@@ -13,18 +13,19 @@ class Command{
 	uint16_t msg_id;
 	uint8_t type;
 protected:
+	Command();
+public:
+	Command(uint8_t type, uint16_t msg_id);
+	~Command();
 
+	// internal stuff
 	void addOpCode(uint8_t code);
 	void addParameter(bool b);
 	void addParameter(uint8_t b);
 	void addParameter(int8_t b) { addParameter((uint8_t)b); }
 	void addParameter(uint32_t b);
 	void addParameter(int32_t b) { addParameter((uint32_t)b); }
-
-	Command();
-public:
-	Command(uint8_t type, uint16_t msg_id);
-	~Command();
+	void addGlobalVar(uint8_t id);
 	
 	// commands
 	void startMotor(uint8_t port);
@@ -34,11 +35,9 @@ public:
 	void startMotorPower(uint8_t port, int8_t power);
 	void readSensor(uint8_t port);
 	
-
 	// response handlers
 	static int responseReadSensor(CBuffer& data);
 	
-
 	// general
 	CBuffer& toBytes();
 	

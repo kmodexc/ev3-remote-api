@@ -65,6 +65,11 @@ void Command::addParameter(uint32_t param)
 	data.push_back((uint8_t)((param >> 24) & 0xff));
 }
 
+void Command::addGlobalVar(uint8_t id){
+	data.push_back((uint8_t)GV0(data[5]));	// destination where to store return
+	data[5] += 1;							// state that you want to use a global variable
+}
+
 void Command::turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRampUp, uint32_t msConstant, uint32_t msRampDown, bool brake)
 {
 	addOpCode(opOUTPUT_TIME_POWER);
@@ -102,8 +107,7 @@ void Command::readSensor(uint8_t port){
 	addParameter((uint8_t)GET_RAW);
 	addParameter((uint8_t)0);
 	addParameter(port);
-	data.push_back((uint8_t)GV0(0));	// destination where to store return
-	data[5] += 1;					// state that you want to use a global variable
+	addGlobalVar(0);
 	responseHandler = responseReadSensor;
 }
 
