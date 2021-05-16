@@ -6,8 +6,6 @@
 #include "bytecode.h"
 #include "c_com.h"
 
-#define BUBYTE unsigned char
-
 class Command{
 	CBuffer data;
 	uint16_t msg_id;

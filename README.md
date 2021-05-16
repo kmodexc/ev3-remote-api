@@ -59,3 +59,29 @@ con.Send(com.toBytes(),&reply)
 // Depending on the size, the global variables will be on the reply starting with byte 5
 return reply[5];
 ```
+
+# Python API
+
+## Install
+
+Dependencys:
+git, cmake, make, c++ compiler (e.g. g++), python3-dev 
+```
+git clone --recursive https://gitlab.gwdg.de/m.schlueter01/lego-raspi-api.git
+mkdir build && cd build
+cmake .. && make
+```
+The library is called `legoapi.cpython-[...].so`. Copy this in your execution folder call in python
+```
+import legoapi
+
+b = legoapi.Brick()
+
+if(b.Initialize()):
+  b.setMotorSpeed(legoapi.Output.A,100)
+  # do something else
+
+# ...
+
+```
+

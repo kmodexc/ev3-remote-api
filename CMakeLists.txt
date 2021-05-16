@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 project(LegoRaspiApi)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
+add_subdirectory(pybind11)
+pybind11_add_module(legoapi 
+	PubLeReAPI.cpp
+	)
+target_link_libraries(legoapi PUBLIC LegoRaspiApiLib)
+
 #c++ library
 add_library(LegoRaspiApiLib SHARED
 	"Command.cpp"
@@ -10,17 +16,3 @@ add_library(LegoRaspiApiLib SHARED
 )
 target_link_libraries(LegoRaspiApiLib PUBLIC stdc++fs)
 target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
-
-#python api
-add_library(PubLeReAPI SHARED
-	PubLeReAPI.cpp
-)
-target_compile_features(PubLeReAPI PUBLIC cxx_std_17)
-target_link_libraries(PubLeReAPI PUBLIC LegoRaspiApiLib)
-
-# tests
-add_executable(LegoRaspiApiTest
-	main.cpp
-)
-target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
-target_link_libraries(LegoRaspiApiTest LegoRaspiApiLib)
