@@ -1,104 +1,36 @@
 #include "Brick.h"
-
-// sleep
-#include <unistd.h>
-
-#include <chrono>
 #include <iostream>
-
-#include <thread>
-
-using std::cout;
-using std::endl;
-
-using std::chrono::duration_cast;
-using std::chrono::microseconds;
-using std::chrono::nanoseconds;
-using std::chrono::steady_clock;
-
-using namespace std::this_thread;
-
-void stopMotor(Brick &brick)
-{
-	for (int trys = 0; trys < 2; trys++)
-	{
-		brick.setMotorPower(Output::A, 0);
-		int val = 0;
-		for (int cnt = 0; cnt < 1000; cnt++)
-		{
-			int cnt2 = 0;
-			for (; cnt2 < 10; cnt2++)
-			{
-				sleep_for(microseconds(100));
-				int nval = brick.getSensorVal(Input::PortA);
-				if (val != nval)
-				{
-					val = nval;
-					break;
-				}
-			}
-			if (cnt2 >= 9)
-				return;
-		}
-		cout << "could not stop motor try" << trys << endl;
-	}
-	cout << "could not stop motor failed" << endl;
-}
-
-void startMotor(Brick &brick)
-{
-	for (int trys = 0; trys < 2; trys++)
-	{
-		brick.setMotorPower(Output::A, 99);
-
-		sleep_for(microseconds(1000));
-
-		int val = brick.getSensorVal(Input::PortA);
-		for (int cnt = 0; cnt < 1000; cnt++)
-		{
-			//sleep_for(microseconds(1000));
-			int nval = brick.getSensorVal(Input::PortA);
-			if (val != nval)
-				return;
-		}
-		cout << "could not start motor try" << trys << endl;
-	}
-	cout << "could not start motor failed" << endl;
-}
+using namespace std;
 
 int main(int argc, char **argv)
 {
-	Brick brick(false);
+	Brick brick(true);
 	int val = 0;
 
 	if (!brick.Initialize())
 		return 1;
 
-	steady_clock::time_point begin = steady_clock::now();
+	Command c1(DIRECT_COMMAND_REPLY, 0, 16, 4);
+	c1.arrayCreate8(0, 16);
+	c1.arrayCreate8(2, 16);
+	c1.arrayWrite(0, 0, 2);
+	c1.arrayWrite(0, 1, 0x41);
+	c1.arrayWrite(0, 2, 'P');
+	c1.inputDeviceSetup((int)Input::Port1,1,0,3,0,0,2);
+	c1.arrayWrite(0, 0, 2);
+	c1.arrayWrite(0, 1, 0x49);
+	//c1.inputDeviceSetup((int)Input::Port1,1,0,2,0,8,2);
+	c1.arrayMultiRead(2, 0, 8);
+	CBuffer raw = brick.sendCommand(c1);
+	CBuffer data = Command::responseArrayMultiRead(raw, 16);
 
-	val = brick.getSensorVal(Input::Port1);
-
-	steady_clock::time_point end = steady_clock::now();
-
-	cout << "val is " << val << endl;
-
-	cout << "Time difference = " << duration_cast<microseconds>(end - begin).count() << "[µs]" << endl;
-	cout << "Time difference = " << duration_cast<nanoseconds>(end - begin).count() << "[ns]" << endl;
-
-	sleep(1);
-
-	begin = steady_clock::now();
-
-	startMotor(brick);
-
-	end = steady_clock::now();
-
-	cout << "Time difference = " << duration_cast<microseconds>(end - begin).count() << "[µs]" << endl;
-	cout << "Time difference = " << duration_cast<nanoseconds>(end - begin).count() << "[ns]" << endl;
-
-	sleep(1);
-
-	stopMotor(brick);
+	if (data.size() > 0)
+	{
+		for (int cnt = 0; cnt < data.size(); cnt++)
+			cout << "data[" << cnt << "]: " << (int)data[cnt] << endl;
+	}
+	else
+		cout << "error no data" << endl;
 
 	return 0;
 }

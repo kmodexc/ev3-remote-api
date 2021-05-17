@@ -224,7 +224,7 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 			return false;
 		}
 
-		uint8_t buf[10];
+		uint8_t buf[20];
 
 		/* Get a report from the device */
 		res = read(fd, buf, sizeof(buf));
