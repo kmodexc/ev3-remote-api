@@ -76,6 +76,7 @@ void Command::addLocalVar(uint8_t id)
 
 void Command::addHandle(uint16_t id)
 {
+	//addLocalVar((uint8_t)id);
 	data.push_back((uint8_t)(PRIMPAR_LONG | PRIMPAR_VARIABEL | PRIMPAR_LOCAL | PRIMPAR_HANDLE | PRIMPAR_2_BYTES));
 	data.push_back((uint8_t)(id & 0xff));
 	data.push_back((uint8_t)((id >> 8) & 0xff));
@@ -141,7 +142,7 @@ void Command::arrayWrite(uint8_t arr, uint32_t index, uint8_t val)
 void Command::arrayRead(uint8_t arr, uint32_t index, uint8_t gv_ind)
 {
 	addOpCode(opARRAY_READ);
-	addLocalVar(arr);
+	addHandle(arr);
 	addParameter(index);
 	addGlobalVar(gv_ind);
 }
@@ -164,7 +165,7 @@ void Command::inputDeviceSetup(uint8_t port, uint8_t repeat, uint16_t time, uint
 	addParameter(write_size);
 	addLocalVar(writearr);
 	addParameter(readsize);
-	addLocalVar(readarr);
+	addGlobalVar(readarr);
 }
 
 int Command::responseReadSensor(CBuffer &data)
