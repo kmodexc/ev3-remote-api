@@ -41,9 +41,11 @@ CBuffer Brick::sendCommand(Command &com)
 	CBuffer reply;
 	if (com.getType() == DIRECT_COMMAND_REPLY)
 	{
-		if(!con.Send(com.toBytes(), &reply))
+		if (!con.Send(com.toBytes(), &reply))
 			printf("could not send command\n");
-	}else if(!con.Send(com.toBytes())){
+	}
+	else if (!con.Send(com.toBytes()))
+	{
 		printf("could not send command\n");
 	}
 	return reply;
@@ -51,18 +53,21 @@ CBuffer Brick::sendCommand(Command &com)
 
 void Brick::setMotorPower(Output motor, int8_t power)
 {
-	if (power == 0)
+	for (int cnt = 0; cnt < 10; cnt++)
 	{
-		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
-		c1.stopMotor((uint8_t)motor);
-		sendCommand(c1);
-	}
-	else
-	{
-		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
-		c1.startMotorPower((uint8_t)motor, power);
-		c1.startMotor((uint8_t)motor);
-		sendCommand(c1);
+		if (power == 0)
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.stopMotor((uint8_t)motor);
+			sendCommand(c1);
+		}
+		else
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.startMotorPower((uint8_t)motor, power);
+			c1.startMotor((uint8_t)motor);
+			sendCommand(c1);
+		}
 	}
 }
 
