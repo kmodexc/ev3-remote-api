@@ -1,5 +1,7 @@
 #include "Motor.h"
 
+Brick gBrick;
+
 Motor::Motor(Output port)
 {
 	gBrick.Initialize();
@@ -17,11 +19,11 @@ void Motor::run(uint8_t speed)
 {
 	gBrick.setMotorSpeed(port,speed);
 }
-void Motor::run_time(uint8_t speed, uint32_t time, Then then = Then::Hold, bool wait = true)
+void Motor::run_time(uint8_t speed, uint32_t time, Then then)
 {
 	gBrick.runMotorForTime(port, speed, time, (then == Then::Brake || then == Then::Hold ? true : false));
 }
-void Motor::run_angle(uint8_t speed, uint32_t angle, Then then = Then::Hold, bool wait = true)
+void Motor::run_angle(uint8_t speed, uint32_t angle, Then then)
 {
 	gBrick.runMotorForAngle(port, speed, angle, (then == Then::Brake || then == Then::Hold ? true : false));
 }

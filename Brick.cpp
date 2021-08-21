@@ -1,5 +1,7 @@
 #include "Brick.h"
 
+#define MSG_REPEAT 3
+
 // uint16_t Brick::createArray(uint8_t length)
 // {
 // 	CBuffer buffer;
@@ -58,7 +60,7 @@ CBuffer Brick::sendCommand(Command &com)
 
 void Brick::setMotorSpeed(Output motor, int8_t speed)
 {
-	for (int cnt = 0; cnt < 10; cnt++)
+	for (int cnt = 0; cnt < MSG_REPEAT; cnt++)
 	{
 		if (speed == 0)
 		{
@@ -78,7 +80,7 @@ void Brick::setMotorSpeed(Output motor, int8_t speed)
 
 void Brick::runMotorForAngle(Output motor, int8_t speed, int32_t angle, bool brake)
 {
-	for (int cnt = 0; cnt < 10; cnt++)
+	for (int cnt = 0; cnt < MSG_REPEAT; cnt++)
 	{
 		if (speed == 0)
 		{
@@ -98,7 +100,7 @@ void Brick::runMotorForAngle(Output motor, int8_t speed, int32_t angle, bool bra
 
 void Brick::runMotorForTime(Output motor, int8_t speed, uint32_t time, bool brake)
 {
-	for (int cnt = 0; cnt < 1; cnt++)
+	for (int cnt = 0; cnt < MSG_REPEAT; cnt++)
 	{
 		if (speed == 0)
 		{
@@ -118,7 +120,7 @@ void Brick::runMotorForTime(Output motor, int8_t speed, uint32_t time, bool brak
 
 void Brick::brakeMotor(Output motor)
 {
-	for (int cnt = 0; cnt < 10; cnt++)
+	for (int cnt = 0; cnt < MSG_REPEAT; cnt++)
 	{
 		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
 		c1.stopOutput((uint8_t)motor, true);

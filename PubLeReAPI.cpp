@@ -7,7 +7,7 @@ PYBIND11_MODULE(legoapi, m) {
     m.doc() = "";
 
 	py::class_<Motor>(m,"Motor")
-		.def(py::init())
+		.def(py::init<Output>())
 		.def("stop",&Motor::stop)
 		.def("brake",&Motor::brake)
 		.def("run",&Motor::run)

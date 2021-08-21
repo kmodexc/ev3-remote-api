@@ -13,6 +13,7 @@ add_library(LegoRaspiApiLib SHARED
 	"Command.cpp"
 	HIDCon.cpp
 	Brick.cpp
+	Motor.cpp
 )
 target_link_libraries(LegoRaspiApiLib PUBLIC stdc++fs)
 target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
