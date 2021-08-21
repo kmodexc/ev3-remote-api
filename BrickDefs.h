@@ -17,3 +17,9 @@ enum class Input{
 	PortC = 18,
 	PortD = 19
 };
+
+enum class Then{
+	Coast,
+	Brake,
+	Hold
+};

@@ -9,6 +9,7 @@ class Brick
 	HIDCon con;
 	uint16_t msg_cnt;
 	bool debug;
+	bool initialized;
 
 	uint16_t h_arr_i2c_setup;
 	uint16_t h_arr_i2c_read;
@@ -23,12 +24,21 @@ public:
 public:
 	Brick(bool debug = false) : msg_cnt(0),
 								debug(debug),
-								con(debug)
+								con(debug),
+								initialized(false)
 	{
 	}
 	~Brick() {}
 	bool Initialize();
-	void setMotorPower(Output motor, int8_t power);
+
+	// motors
+	void setMotorSpeed(Output motor, int8_t speed);
+	void runMotorForAngle(Output motor, int8_t speed, int32_t angle, bool brake);
+	void runMotorForTime(Output motor, int8_t speed, uint32_t time, bool brake);
+	void brakeMotor(Output motor);
+	int32_t getTachoCount(Output motor);
+	
+	// sensors 
 	int getSensorVal(Input port);
 	CBuffer getLineReaderValues(Input port);
 };

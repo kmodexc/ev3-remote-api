@@ -1,16 +1,18 @@
 #include "pybind11/include/pybind11/pybind11.h"
-#include "Brick.h"
+#include "Motor.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(legoapi, m) {
     m.doc() = "";
 
-	py::class_<Brick>(m,"Brick")
+	py::class_<Motor>(m,"Motor")
 		.def(py::init())
-		.def("Initialize",&Brick::Initialize)
-		.def("setMotorPower",&Brick::setMotorPower)
-		.def("getSensorVal",&Brick::getSensorVal);
+		.def("stop",&Motor::stop)
+		.def("brake",&Motor::brake)
+		.def("run",&Motor::run)
+		.def("run_time",&Motor::run_time)
+		.def("run_angle",&Motor::run_angle);
 
 	py::enum_<Input>(m, "Input", py::arithmetic())
         .value("Port1", Input::Port1)
@@ -23,4 +25,10 @@ PYBIND11_MODULE(legoapi, m) {
 		.value("B", Output::B)
 		.value("C", Output::C)
         .value("D", Output::D);
+
+	py::enum_<Then>(m, "Then", py::arithmetic())
+        .value("Brake", Then::Brake)
+		.value("Coast", Then::Coast)
+		.value("Hold", Then::Hold);
+
 }

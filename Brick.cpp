@@ -26,12 +26,17 @@
 
 bool Brick::Initialize()
 {
+	if(initialized)
+		return true;
+
 	if (!con.Initialize())
 		return false;
 
 	//h_arr_i2c_setup = createArray(3);
 	//h_arr_i2c_read = createArray(3);
 	//h_arr_i2c_reply = createArray(9);
+
+	initialized = true;
 
 	return true;
 }
@@ -51,24 +56,82 @@ CBuffer Brick::sendCommand(Command &com)
 	return reply;
 }
 
-void Brick::setMotorPower(Output motor, int8_t power)
+void Brick::setMotorSpeed(Output motor, int8_t speed)
 {
 	for (int cnt = 0; cnt < 10; cnt++)
 	{
-		if (power == 0)
+		if (speed == 0)
 		{
 			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
-			c1.stopMotor((uint8_t)motor);
+			c1.stopOutput((uint8_t)motor, false);
 			sendCommand(c1);
 		}
 		else
 		{
 			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
-			c1.startMotorPower((uint8_t)motor, power);
-			c1.startMotor((uint8_t)motor);
+			c1.setMotorPower((uint8_t)motor, speed);
+			c1.startOutput((uint8_t)motor);
 			sendCommand(c1);
 		}
 	}
+}
+
+void Brick::runMotorForAngle(Output motor, int8_t speed, int32_t angle, bool brake)
+{
+	for (int cnt = 0; cnt < 10; cnt++)
+	{
+		if (speed == 0)
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.stopOutput((uint8_t)motor, brake);
+			sendCommand(c1);
+		}
+		else
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.turnMotorAtSpeedForAngle((uint8_t)motor, speed,0,angle,0,brake);
+			c1.startOutput((uint8_t)motor);
+			sendCommand(c1);
+		}
+	}
+}
+
+void Brick::runMotorForTime(Output motor, int8_t speed, uint32_t time, bool brake)
+{
+	for (int cnt = 0; cnt < 1; cnt++)
+	{
+		if (speed == 0)
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.stopOutput((uint8_t)motor, brake);
+			sendCommand(c1);
+		}
+		else
+		{
+			Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+			c1.turnMotorAtSpeedForTime((uint8_t)motor, speed,0,time,0,brake);
+			c1.startOutput((uint8_t)motor);
+			sendCommand(c1);
+		}
+	}
+}
+
+void Brick::brakeMotor(Output motor)
+{
+	for (int cnt = 0; cnt < 10; cnt++)
+	{
+		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+		c1.stopOutput((uint8_t)motor, true);
+		sendCommand(c1);
+	}
+}
+
+int32_t Brick::getTachoCount(Output port)
+{
+	Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 1, 0);
+	c1.getTachoCount((uint8_t)port);
+	CBuffer reply = sendCommand(c1);
+	return Command::responseTachoCount(reply);
 }
 
 int Brick::getSensorVal(Input port)

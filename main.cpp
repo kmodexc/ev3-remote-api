@@ -12,11 +12,11 @@ int main(int argc, char **argv)
 		return 1;
 
 
-	brick.setMotorPower(Output::A,100);
-	brick.setMotorPower(Output::B,100);
+	brick.setMotorSpeed(Output::A,100);
+	brick.setMotorSpeed(Output::B,100);
 	sleep(2);
-	brick.setMotorPower(Output::A,0);
-	brick.setMotorPower(Output::B,0);
+	brick.setMotorSpeed(Output::A,0);
+	brick.setMotorSpeed(Output::B,0);
 
 
 	return 0;

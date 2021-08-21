@@ -5,7 +5,7 @@
 #include "c_com.h"
 
 Command::Command()
-	: Command(DIRECT_COMMAND_NO_REPLY, 1, 0,0)
+	: Command(DIRECT_COMMAND_NO_REPLY, 1, 0, 0)
 {
 }
 
@@ -21,7 +21,7 @@ Command::Command(uint8_t type, uint16_t msg_id, uint8_t cnt_globals, uint8_t cnt
 
 	data.push_back(type); // type
 
-	data.push_back(cnt_globals); // global vars
+	data.push_back(cnt_globals);  // global vars
 	data.push_back(cnt_loc << 2); // local vars
 }
 
@@ -29,19 +29,19 @@ Command::~Command()
 {
 }
 
-void Command::startMotor(uint8_t port)
+void Command::startOutput(uint8_t port)
 {
 	addOpCode(opOUTPUT_START);
 	addParameter((uint8_t)0);
 	addParameter(port);
 }
 
-void Command::stopMotor(uint8_t port)
+void Command::stopOutput(uint8_t port,bool brake)
 {
 	addOpCode(opOUTPUT_STOP);
 	addParameter((uint8_t)0);
 	addParameter(port);
-	addParameter((uint8_t)0);
+	addParameter((uint8_t)(brake ? 1 : 0));
 }
 
 void Command::addOpCode(uint8_t code)
@@ -94,6 +94,18 @@ void Command::turnMotorAtPowerForTime(uint8_t ports, int8_t power, uint32_t msRa
 	addParameter((uint8_t)(brake ? 0x01 : 0x00));
 }
 
+void Command::turnMotorAtSpeedForTime(uint8_t ports, int8_t speed, uint32_t msRampUp, uint32_t msConstant, uint32_t msRampDown, bool brake)
+{
+	addOpCode(opOUTPUT_TIME_SPEED);
+	addParameter((uint8_t)0);
+	addParameter(ports);
+	addParameter(speed);
+	addParameter(msRampUp);
+	addParameter(msConstant);
+	addParameter(msRampDown);
+	addParameter((uint8_t)(brake ? 0x01 : 0x00));
+}
+
 void Command::turnMotorAtSpeedForAngle(uint8_t ports, int8_t speed, uint32_t stepRampUp, uint32_t stepConstant, uint32_t stepRampDown, bool brake)
 {
 	addOpCode(opOUTPUT_STEP_SPEED);
@@ -106,12 +118,24 @@ void Command::turnMotorAtSpeedForAngle(uint8_t ports, int8_t speed, uint32_t ste
 	addParameter((uint8_t)(brake ? 0x01 : 0x00));
 }
 
-void Command::startMotorPower(uint8_t port, int8_t power)
+void Command::turnMotorAtPowerForAngle(uint8_t ports, int8_t power, uint32_t stepRampUp, uint32_t stepConstant, uint32_t stepRampDown, bool brake)
+{
+	addOpCode(opOUTPUT_STEP_POWER);
+	addParameter((uint8_t)0);
+	addParameter(ports);
+	addParameter(power);
+	addParameter(stepRampUp);
+	addParameter(stepConstant);
+	addParameter(stepRampDown);
+	addParameter((uint8_t)(brake ? 0x01 : 0x00));
+}
+
+void Command::startMotorSpeed(uint8_t port, int8_t speed)
 {
 	addOpCode(opOUTPUT_SPEED);
 	addParameter((uint8_t)0);
 	addParameter(port);
-	addParameter(power);
+	addParameter(speed);
 }
 
 void Command::readSensor(uint8_t port)
@@ -123,7 +147,7 @@ void Command::readSensor(uint8_t port)
 	addGlobalVar(0);
 }
 
-void Command::arrayCreate8(uint8_t localind,uint32_t length)
+void Command::arrayCreate8(uint8_t localind, uint32_t length)
 {
 	addOpCode(opARRAY);
 	addParameter((uint8_t)CREATE8);
@@ -149,8 +173,9 @@ void Command::arrayRead(uint8_t arr, uint32_t index, uint8_t gv_ind)
 
 void Command::arrayMultiRead(uint8_t arr, uint32_t index, uint8_t length)
 {
-	for(int cnt = 0;cnt < length; cnt++){
-		arrayRead(arr,index+cnt,cnt);
+	for (int cnt = 0; cnt < length; cnt++)
+	{
+		arrayRead(arr, index + cnt, cnt);
 	}
 }
 
@@ -168,6 +193,28 @@ void Command::inputDeviceSetup(uint8_t port, uint8_t repeat, uint16_t time, uint
 	addGlobalVar(readarr);
 }
 
+void Command::resetOutputTacho(uint8_t port)
+{
+	addOpCode(opOUTPUT_RESET);
+	addParameter((uint8_t)0);
+	addParameter(port);
+}
+
+void Command::setMotorPower(uint8_t port, int8_t power)
+{
+	addOpCode(opOUTPUT_POWER);
+	addParameter((uint8_t)0);
+	addParameter(port);
+	addParameter(power);
+}
+
+void Command::getTachoCount(uint8_t port)
+{
+	addOpCode(opOUTPUT_READ);
+	addParameter((uint8_t)0);
+	addParameter(port);
+}
+
 int Command::responseReadSensor(CBuffer &data)
 {
 	if (data[4] != DIRECT_REPLY)
@@ -180,8 +227,9 @@ CBuffer Command::responseArrayMultiRead(CBuffer &data, uint8_t length)
 	if (data[4] != DIRECT_REPLY || (data[0] - 3) != length)
 		return CBuffer();
 	CBuffer ret(length);
-	for(uint8_t cnt=0;cnt < length;cnt++){
-		ret[cnt] = data[5+cnt];
+	for (uint8_t cnt = 0; cnt < length; cnt++)
+	{
+		ret[cnt] = data[5 + cnt];
 	}
 	return ret;
 }
@@ -192,6 +240,12 @@ uint16_t Command::responseArrayCreate(CBuffer &data)
 	val = data[5];
 	val |= data[6] >> 8;
 	return val;
+}
+
+int32_t Command::responseTachoCount(CBuffer &data){
+	if (data[4] != DIRECT_REPLY)
+		return -1;
+	return data[5];
 }
 
 std::vector<uint8_t> &Command::toBytes()
