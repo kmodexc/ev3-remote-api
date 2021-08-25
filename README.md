@@ -2,6 +2,8 @@
 
 ## Info
 
+The Documentation can be found [here](einsteinmaster.github.io)
+
 ### General
 With this API you can control your LEGO EV3 connected with USB from your Linux PC. Its main purpose is to provide a fast interface for controlling the LEGO EV3.
 
