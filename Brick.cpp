@@ -1,5 +1,8 @@
 #include "Brick.h"
 
+// global brick variable used by Motor, ColorSensor and TouchSensor
+Brick gBrick;
+
 #define MSG_REPEAT 3
 
 // uint16_t Brick::createArray(uint8_t length)
@@ -134,6 +137,16 @@ int32_t Brick::getTachoCount(Output port)
 	c1.getTachoCount((uint8_t)port);
 	CBuffer reply = sendCommand(c1);
 	return Command::responseTachoCount(reply);
+}
+
+void Brick::resetTachoCount(Output motor)
+{
+	for (int cnt = 0; cnt < MSG_REPEAT; cnt++)
+	{
+		Command c1(DIRECT_COMMAND_NO_REPLY, msg_cnt++, 0, 0);
+		c1.resetOutputTacho((uint8_t)motor);
+		sendCommand(c1);
+	}
 }
 
 int Brick::getSensorVal(Input port)

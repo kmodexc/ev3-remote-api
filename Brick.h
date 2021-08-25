@@ -37,8 +37,11 @@ public:
 	void runMotorForTime(Output motor, int8_t speed, uint32_t time, bool brake);
 	void brakeMotor(Output motor);
 	int32_t getTachoCount(Output motor);
+	void resetTachoCount(Output motor);
 	
 	// sensors 
 	int getSensorVal(Input port);
 	CBuffer getLineReaderValues(Input port);
 };
+
+extern Brick gBrick;

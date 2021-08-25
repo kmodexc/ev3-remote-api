@@ -1,5 +1,7 @@
 #include "pybind11/include/pybind11/pybind11.h"
 #include "Motor.h"
+#include "ColorSensor.h"
+#include "TouchSensor.h"
 
 namespace py = pybind11;
 
@@ -8,11 +10,13 @@ PYBIND11_MODULE(legoapi, m) {
 
 	py::class_<Motor>(m,"Motor")
 		.def(py::init<Output>())
-		.def("stop",&Motor::stop)
+		.def("angle",&Motor::angle)
+		.def("reset_angle",&Motor::reset_angle)
 		.def("brake",&Motor::brake)
 		.def("run",&Motor::run)
 		.def("run_time",&Motor::run_time)
-		.def("run_angle",&Motor::run_angle);
+		.def("run_angle",&Motor::run_angle)
+		.def("run_target",&Motor::run_target);
 
 	py::enum_<Input>(m, "Input", py::arithmetic())
         .value("Port1", Input::Port1)
@@ -30,5 +34,13 @@ PYBIND11_MODULE(legoapi, m) {
         .value("Brake", Then::Brake)
 		.value("Coast", Then::Coast)
 		.value("Hold", Then::Hold);
+
+	py::class_<ColorSensor>(m,"ColorSensor")
+		.def(py::init<Input>())
+		.def("ambient",&ColorSensor::ambient);
+
+	py::class_<TouchSensor>(m,"TouchSensor")
+		.def(py::init<Input>())
+		.def("pressed",&TouchSensor::pressed);
 
 }

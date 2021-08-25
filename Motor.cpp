@@ -1,11 +1,17 @@
 #include "Motor.h"
 
-Brick gBrick;
-
 Motor::Motor(Output port)
 {
 	gBrick.Initialize();
 	this->port = port;
+}
+int32_t Motor::angle()
+{
+	return gBrick.getTachoCount(port);
+}
+void Motor::reset_angle()
+{
+	gBrick.resetTachoCount(port);
 }
 void Motor::stop()
 {
@@ -23,7 +29,11 @@ void Motor::run_time(uint8_t speed, uint32_t time, Then then)
 {
 	gBrick.runMotorForTime(port, speed, time, (then == Then::Brake || then == Then::Hold ? true : false));
 }
-void Motor::run_angle(uint8_t speed, uint32_t angle, Then then)
+void Motor::run_angle(uint8_t speed, int32_t angle, Then then)
 {
 	gBrick.runMotorForAngle(port, speed, angle, (then == Then::Brake || then == Then::Hold ? true : false));
+}
+void Motor::run_target(uint8_t speed, int32_t angle, Then then)
+{
+	run_angle(speed, (angle - this->angle()), then);
 }

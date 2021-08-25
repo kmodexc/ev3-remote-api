@@ -14,6 +14,8 @@ add_library(LegoRaspiApiLib SHARED
 	HIDCon.cpp
 	Brick.cpp
 	Motor.cpp
+	TouchSensor.cpp
+	ColorSensor.cpp
 )
 target_link_libraries(LegoRaspiApiLib PUBLIC stdc++fs)
 target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
