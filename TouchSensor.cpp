@@ -6,5 +6,5 @@ TouchSensor::TouchSensor(Input port)
 }
 bool TouchSensor::pressed()
 {
-	return (bool)gBrick.getSensorVal(port);
+	return gBrick.getSensorVal(port) > 2000;
 }

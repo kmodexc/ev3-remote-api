@@ -7,6 +7,8 @@
 ## Classes
 
  * [Motor](motor/)
+ * [TouchSensor](touchsensor/)
+ * [ColorSensor](colorsensor/)
 
 ## Enums
 

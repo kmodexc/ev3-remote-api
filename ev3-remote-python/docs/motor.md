@@ -10,6 +10,14 @@ Parameters:
 
 ## Methods
 
+`angle()`
+
+Returns the degree of the motor.
+
+`reset_angle()`
+
+Resets the degree of the motor to 0.
+
 `stop()`
 
 Stops the motor without braking.
@@ -44,4 +52,14 @@ Parameters:
 
  * speed(percetage) - Speed of motor in percent between -100 and 100.
  * angle(deg) - Angle by which the motor should rotate.
+ * then([Then](/then/)) - What should be done after this action.
+
+`run_target(speed, angle, then)`
+
+Starts the motor for a specific rotation-angle and speed.
+
+Parameters:
+
+ * speed(percetage) - Speed of motor in percent between -100 and 100.
+ * angle(deg) - Angle to which the motor should rotate.
  * then([Then](/then/)) - What should be done after this action.

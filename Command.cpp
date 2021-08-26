@@ -195,7 +195,7 @@ void Command::inputDeviceSetup(uint8_t port, uint8_t repeat, uint16_t time, uint
 
 void Command::resetOutputTacho(uint8_t port)
 {
-	addOpCode(opOUTPUT_RESET);
+	addOpCode(opOUTPUT_CLR_COUNT);
 	addParameter((uint8_t)0);
 	addParameter(port);
 }
@@ -213,20 +213,22 @@ void Command::getTachoCount(uint8_t port)
 	addOpCode(opOUTPUT_READ);
 	addParameter((uint8_t)0);
 	addParameter(port);
+	addGlobalVar((uint8_t)4);
+	addGlobalVar((uint8_t)0);
 }
 
 int Command::responseReadSensor(CBuffer &data)
 {
 	if (data[4] != DIRECT_REPLY)
 		return -1;
-	return data[5];
+	return (data[8] << 24) + (data[7] << 16) + (data[6] << 8) + data[5];
 }
 
 CBuffer Command::responseArrayMultiRead(CBuffer &data, uint8_t length)
 {
 	if (data[4] != DIRECT_REPLY || (data[0] - 3) != length)
 		return CBuffer();
-	CBuffer ret(length);
+	CBuffer ret(length); 
 	for (uint8_t cnt = 0; cnt < length; cnt++)
 	{
 		ret[cnt] = data[5 + cnt];
@@ -245,7 +247,7 @@ uint16_t Command::responseArrayCreate(CBuffer &data)
 int32_t Command::responseTachoCount(CBuffer &data){
 	if (data[4] != DIRECT_REPLY)
 		return -1;
-	return data[5];
+	return (data[8] << 24) + (data[7] << 16) + (data[6] << 8) + data[5];
 }
 
 std::vector<uint8_t> &Command::toBytes()

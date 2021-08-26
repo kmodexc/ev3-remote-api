@@ -6,7 +6,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(legoapi, m) {
-    m.doc() = "";
+    m.doc() = "einsteinmaster.github.io";
 
 	py::class_<Motor>(m,"Motor")
 		.def(py::init<Output>())

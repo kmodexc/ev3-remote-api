@@ -1,4 +1,5 @@
 #include "Brick.h"
+#include <cmath>
 
 // global brick variable used by Motor, ColorSensor and TouchSensor
 Brick gBrick;
@@ -133,10 +134,10 @@ void Brick::brakeMotor(Output motor)
 
 int32_t Brick::getTachoCount(Output port)
 {
-	Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 1, 0);
-	c1.getTachoCount((uint8_t)port);
-	CBuffer reply = sendCommand(c1);
-	return Command::responseTachoCount(reply);
+	int _port = (int)port;
+	int targetlevel = 0;
+	while (_port >>= 1) ++targetlevel;
+	return getSensorVal((Input)(targetlevel+16));
 }
 
 void Brick::resetTachoCount(Output motor)
@@ -151,7 +152,7 @@ void Brick::resetTachoCount(Output motor)
 
 int Brick::getSensorVal(Input port)
 {
-	Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 1, 0);
+	Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 4, 0);
 	c1.readSensor((uint8_t)port);
 	CBuffer reply = sendCommand(c1);
 	return Command::responseReadSensor(reply);
