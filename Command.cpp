@@ -4,6 +4,10 @@
 #include "bytecode.h"
 #include "c_com.h"
 
+#include <exception>
+
+using std::exception;
+
 Command::Command()
 	: Command(DIRECT_COMMAND_NO_REPLY, 1, 0, 0)
 {
@@ -13,6 +17,13 @@ Command::Command(uint8_t type, uint16_t msg_id, uint8_t cnt_globals, uint8_t cnt
 	: type(type),
 	  msg_id(msg_id)
 {
+	if(cnt_globals > 1024)
+	//	throw new exception("Global buffer must be less than 1024 bytes");
+		throw new exception();
+	if(cnt_loc > 64)
+	//	throw new exception("Local buffer must be less than 64 bytes");
+		throw new exception();
+
 	data.push_back(0xff); // size
 	data.push_back(0xff); // size
 
@@ -22,7 +33,7 @@ Command::Command(uint8_t type, uint16_t msg_id, uint8_t cnt_globals, uint8_t cnt
 	data.push_back(type); // type
 
 	data.push_back(cnt_globals);  // global vars
-	data.push_back(cnt_loc << 2); // local vars
+	data.push_back((cnt_loc << 2)  | ((cnt_globals >> 8) & 0x03)); // local vars
 }
 
 Command::~Command()

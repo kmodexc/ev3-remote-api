@@ -129,3 +129,22 @@ print(ts.pressed())
 
 ```
 
+## Documentation
+
+The API is almost the same as the [Pybricks API for EV3](https://docs.pybricks.com/en/stable/ev3devices.html).
+
+The follwing diffrences are here mentioned:
+ * Class EV3Brick is not implemented
+ * Motor constructor has only the port argument
+ * Motor.speed() is not implemented
+ * Motor.reset_angle(angle) takes no argument so its reset_angle()
+ * Motor.run_until_target(...) is not implemented
+ * Motor.dc(...) is not implemented
+ * Motor.track_target(...) is not implemented
+ * Motor.control is not implemented
+ * ColorSensor has only the ambient() function
+ * InfraredSensor is not implemented
+ * UltrasonicSensor.distance() has no optional argument silent
+ * UltrasonicSensor.presence() is not implemented
+ 
+
