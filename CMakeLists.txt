@@ -9,6 +9,7 @@ pybind11_add_module(legoapi
 target_link_libraries(legoapi PUBLIC LegoRaspiApiLib)
 
 #c++ library
+find_package(Threads REQUIRED)
 add_library(LegoRaspiApiLib SHARED
 	"Command.cpp"
 	HIDCon.cpp
@@ -17,7 +18,7 @@ add_library(LegoRaspiApiLib SHARED
 	TouchSensor.cpp
 	ColorSensor.cpp
 )
-target_link_libraries(LegoRaspiApiLib PUBLIC stdc++fs)
+target_link_libraries(LegoRaspiApiLib PUBLIC stdc++fs Threads::Threads)
 target_compile_features(LegoRaspiApiLib PUBLIC cxx_std_17)
 
 add_executable(test main.cpp)

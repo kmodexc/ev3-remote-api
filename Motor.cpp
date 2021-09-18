@@ -1,9 +1,9 @@
 #include "Motor.h"
 
-Motor::Motor(Output port)
+Motor::Motor(Port port)
 {
 	gBrick.Initialize();
-	this->port = port;
+	this->port = (Output)(1 << ((int)port - 16));
 }
 int32_t Motor::angle()
 {

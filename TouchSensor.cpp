@@ -1,5 +1,5 @@
 #include "TouchSensor.h"
-TouchSensor::TouchSensor(Input port)
+TouchSensor::TouchSensor(Port port)
 {
 	this->port = port;
 	gBrick.Initialize();

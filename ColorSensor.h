@@ -1,8 +1,8 @@
 #pragma once
 #include "Brick.h"
 class ColorSensor{
-	Input port;
+	Port port;
 public:
-	ColorSensor(Input port);
+	ColorSensor(Port port);
 	uint8_t ambient();
 };

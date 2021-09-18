@@ -50,13 +50,16 @@ using std::endl;
 using std::chrono::duration_cast;
 using std::chrono::microseconds;
 using std::chrono::nanoseconds;
+using std::chrono::milliseconds;
 using std::chrono::steady_clock;
 
-namespace fs = std::filesystem;
-
-using namespace std::this_thread;
-
+using std::filesystem::directory_iterator;
 using std::min;
+using std::string;
+using std::this_thread::sleep_for;
+using std::thread;
+
+#define RECV_BUFFER_LEN 1000
 
 const char *
 bus_str(int bus)
@@ -81,6 +84,63 @@ bus_str(int bus)
 	}
 }
 
+void HIDCon::func_recv_loop(CBuffer* pbuffer, int* precv_buffer_msg_count, bool* continue_loop, bool debug, int fd)
+{
+	while(*continue_loop){
+		int ret;
+		struct pollfd fds;
+
+		fds.fd = fd;
+		fds.events = POLLIN;
+		fds.revents = 0;
+		const int timeout = 1000;
+		ret = poll(&fds, 1, timeout);
+		if (ret == 0)
+		{
+			/* Timeout */
+			printf("read timeout %d\n", (uint32_t)timeout);
+			continue;
+		}
+		if (ret == -1)
+		{
+			/* Error */
+			perror("POLL: ");
+			return;
+		}
+
+		uint8_t buf[RECV_BUFFER_LEN];
+
+		/* Get a report from the device */
+		ssize_t res = read(fd, buf, sizeof(buf));
+		if (res < 0)
+		{
+			perror("read");
+		}
+		else if (debug)
+		{
+			printf("read-size: read() read %d bytes:\n\t", (int32_t)res);
+			for (int i = 0; i < sizeof(buf); i++)
+				printf("%hhx ", buf[i]);
+			puts("\n");
+		}
+
+		if(*precv_buffer_msg_count){
+			if(debug) cout << "wait for last msg to be read" << endl;
+			while(*precv_buffer_msg_count) sleep_for(milliseconds(1));
+		}
+
+		size_t msg_size = buf[0] + (buf[1] << 8);
+
+		pbuffer->resize(msg_size + 2);
+
+		memcpy(pbuffer->data(), buf, min(msg_size + 2, sizeof(buf)));
+
+		(*precv_buffer_msg_count)++;
+
+		sleep_for(milliseconds(1));
+	}
+}
+
 HIDCon::HIDCon(bool debug, int mysec_senddelay) : debug(debug),
 												  fd(-1),
 												  mysec_senddelay(mysec_senddelay)
@@ -89,6 +149,10 @@ HIDCon::HIDCon(bool debug, int mysec_senddelay) : debug(debug),
 
 HIDCon::~HIDCon()
 {
+	if(_int_recv_thread.joinable()){
+		_int_continue_recv_loop = false;
+		_int_recv_thread.join();
+	}
 	if (fd >= 0)
 		close(fd);
 }
@@ -178,6 +242,12 @@ bool HIDCon::Initialize(const char *path)
 		printf("Wrong Vendor/Product. Exiting.\n");
 		return false;
 	}
+
+	//_int_recv_buffer.resize(RECV_BUFFER_LEN);
+	_int_continue_recv_loop = true;
+	_int_recv_msg_count = 0;
+	thread(func_recv_loop,&_int_recv_buffer,&_int_recv_msg_count,&_int_continue_recv_loop,debug,fd);
+
 	return true;
 }
 bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
@@ -202,49 +272,10 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 
 	if (presp != nullptr)
 	{
-
-		int ret;
-		struct pollfd fds;
-
-		fds.fd = fd;
-		fds.events = POLLIN;
-		fds.revents = 0;
-		const int timeout = 1000;
-		ret = poll(&fds, 1, timeout);
-		if (ret == 0)
-		{
-			/* Timeout */
-			printf("read timeout %d\n", (uint32_t)timeout);
-			return false;
-		}
-		if (ret == -1)
-		{
-			/* Error */
-			perror("POLL: ");
-			return false;
-		}
-
-		uint8_t buf[20];
-
-		/* Get a report from the device */
-		res = read(fd, buf, sizeof(buf));
-		if (res < 0)
-		{
-			perror("read");
-		}
-		else if (debug)
-		{
-			printf("read-size: read() read %d bytes:\n\t", (int32_t)res);
-			for (int i = 0; i < sizeof(buf); i++)
-				printf("%hhx ", buf[i]);
-			puts("\n");
-		}
-
-		size_t msg_size = buf[0] + (buf[1] << 8);
-
-		presp->resize(msg_size + 2);
-
-		memcpy(presp->data(), buf, min(msg_size + 2, sizeof(buf)));
+		while(!_int_recv_msg_count) sleep_for(milliseconds(1));
+		presp->resize(_int_recv_buffer.size());
+		memcpy(presp->data(),_int_recv_buffer.data(),_int_recv_buffer.size());
+		_int_recv_msg_count = 0;
 	}
 
 	return true;
@@ -252,11 +283,11 @@ bool HIDCon::Send(const CBuffer &buffer, CBuffer *presp)
 
 bool HIDCon::Initialize()
 {
-	std::string path = "/dev";
-	for (const auto &entry : fs::directory_iterator(path))
+	string path = "/dev";
+	for (const auto &entry : directory_iterator(path))
 	{
-		std::string fn(entry.path().filename().c_str());
-		if (fn.find("hidraw") != std::string::npos)
+		string fn(entry.path().filename().c_str());
+		if (fn.find("hidraw") != string::npos)
 		{
 			if (Initialize(entry.path().c_str()))
 				return true;

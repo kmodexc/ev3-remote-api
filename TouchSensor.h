@@ -1,8 +1,8 @@
 #pragma once
 #include "Brick.h"
 class TouchSensor{
-	Input port;
+	Port port;
 public:
-	TouchSensor(Input port);
+	TouchSensor(Port port);
 	bool pressed();
 };

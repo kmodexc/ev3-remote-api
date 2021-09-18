@@ -6,8 +6,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	Motor motora(Output::A);
-	Motor motorb(Output::B);
+	Motor motora(Port::A);
+	Motor motorb(Port::B);
 	motora.reset_angle();
 	motorb.reset_angle();
 	cout << "Motor A angle:" << motora.angle() << endl;
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	cout << "Motor A angle:" << motora.angle() << endl;
 	cout << "Motor B angle:" << motorb.angle() << endl;
 
-	TouchSensor ts(Input::Port2);
+	TouchSensor ts(Port::S2);
 	cout << "Button is pressed: " << ts.pressed() << endl;
 
 	// Brick brick(true);

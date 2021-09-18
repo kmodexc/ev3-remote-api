@@ -1,6 +1,6 @@
 #include "ColorSensor.h"
 
-ColorSensor::ColorSensor(Input port)
+ColorSensor::ColorSensor(Port port)
 {
 	this->port = port;
 	gBrick.Initialize();

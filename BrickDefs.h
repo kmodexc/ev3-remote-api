@@ -7,15 +7,18 @@ enum class Output{
 	D = 8
 };
 
-enum class Input{
-	Port1 = 0,
-	Port2 = 1,
-	Port3 = 2,
-	Port4 = 3,
-	PortA = 16,
-	PortB = 17,
-	PortC = 18,
-	PortD = 19
+// Previously input
+enum class Port{
+	S1 = 0,
+	S2 = 1,
+	S3 = 2,
+	S4 = 3,
+	A = 16,
+	B = 17,
+	C = 18,
+	D = 19,
+	E,
+	F
 };
 
 enum class Then{

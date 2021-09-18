@@ -137,7 +137,7 @@ int32_t Brick::getTachoCount(Output port)
 	int _port = (int)port;
 	int targetlevel = 0;
 	while (_port >>= 1) ++targetlevel;
-	return getSensorVal((Input)(targetlevel+16));
+	return getSensorVal((Port)(targetlevel+16));
 }
 
 void Brick::resetTachoCount(Output motor)
@@ -150,7 +150,7 @@ void Brick::resetTachoCount(Output motor)
 	}
 }
 
-int Brick::getSensorVal(Input port)
+int Brick::getSensorVal(Port port)
 {
 	Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 4, 0);
 	c1.readSensor((uint8_t)port);
@@ -158,7 +158,7 @@ int Brick::getSensorVal(Input port)
 	return Command::responseReadSensor(reply);
 }
 
-CBuffer Brick::getLineReaderValues(Input port)
+CBuffer Brick::getLineReaderValues(Port port)
 {
 	//Command c1(DIRECT_COMMAND_REPLY, msg_cnt++, 1);
 	return CBuffer();

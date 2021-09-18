@@ -40,8 +40,8 @@ public:
 	void resetTachoCount(Output motor);
 	
 	// sensors 
-	int getSensorVal(Input port);
-	CBuffer getLineReaderValues(Input port);
+	int getSensorVal(Port port);
+	CBuffer getLineReaderValues(Port port);
 };
 
 extern Brick gBrick;

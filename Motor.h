@@ -4,7 +4,7 @@
 class Motor{
 	Output port;
 public:
-	Motor(Output port);
+	Motor(Port port);
 	int32_t angle();
 	void reset_angle();
 	void stop();
