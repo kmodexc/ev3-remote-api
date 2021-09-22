@@ -14,3 +14,4 @@ pybind11_add_module(legoapi
 	PubLeReAPI.cpp
 	)
 target_link_libraries(legoapi PUBLIC LegoRaspiApiLib)
+target_include_directories(legoapi PUBLIC ../pybind11/include)
