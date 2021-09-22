@@ -146,5 +146,5 @@ The follwing diffrences are here mentioned:
  * InfraredSensor is not implemented
  * UltrasonicSensor.distance() has no optional argument silent
  * UltrasonicSensor.presence() is not implemented
- 
-
+ * GyroSensor.speed() is not implemented
+ * GyroSensor constructor has only the port argument
